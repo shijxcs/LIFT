@@ -2,7 +2,7 @@
 
 This is the source code for the paper: Parameter-Efficient Long-Tailed Recognition
 
-### Requirements
+## Requirements
 
 * Python 3.8
 * PyTorch 2.0
@@ -23,19 +23,22 @@ pip install -r requirements.txt
 
 We encourage installing the latest dependencies, but if there are any incompatibilities, please change to the dependencies with the specified version `requirements-with-version.txt`.
 
-### Hardware
+## Hardware
 
 All experiments can be reproduced using a single GPU with 20GB of memory.
 
-### Quick Start on the CIFAR-100 dataset
+## Quick Start on the CIFAR-100-LT dataset
 
-`python main.py -d cifar100_ir100 -m clip_vit_b16_peft`
+```bash
+# run PEL on CIFAR-100-LT (with imbalanced ratio=100)
+python main.py -d cifar100_ir100 -m clip_vit_b16_peft
+```
 
 By running the above command, you can automatically download the CIFAR-100 dataset and run the method (PEL).
 
-### Running on large-scale long-tailed datasets
+## Running on Large-scale Long-tailed Datasets
 
-#### Prepare the Dataset
+### Prepare the Dataset
 
 Download the dataset [Places](http://places2.csail.mit.edu/download.html), [ImageNet](http://image-net.org/index), and [iNaturalist 2018](https://github.com/visipedia/inat_comp/tree/master/2018).
 
@@ -86,19 +89,32 @@ Path/To/Dataset
    └─ ......
 ```
 
-#### Usage
+### Reproduction
 
-To train and test the proposed method, run
+To reproduce the main result in the paper, please run
+
+```bash
+# run PEL on ImageNet-LT
+python main.py -d imagenet_lt -m clip_vit_b16_peft
+
+# run PEL on Places-LT
+python main.py -d places_lt -m clip_vit_b16_peft
+
+# run PEL on iNaturalist 2018
+python main.py -d inat2018 -m clip_vit_b16_peft num_epochs 20
+```
+
+### Usage
+
+To train and test the proposed method on more settings, run
 
 ```bash
 python main.py -d [data] -m [model] [options]
 ```
 
-The `[data]` can be the name of a .yaml file in `configs/data`, including `imagenet_lt`, `places_lt`, `inat2018`, and `cifar100_ir100`.
+The `[data]` can be the name of a .yaml file in `configs/data`, including `imagenet_lt`, `places_lt`, `inat2018`, `cifar100_ir100`, `cifar100_ir50` and `cifar100_ir10`.
 
 The `[model]` can be the name of a .yaml file in `configs/model`, including `clip_vit_b16_peft`, `clip_vit_b16_ft`, and `zsclip_vit_b16`.
-
-Taking the CIFAR-100-LT dataset as an example, you can 
 
 The `[options]` can allow the additional configure options that are included in `utils/config.py`. Following are some examples.
 
@@ -110,7 +126,7 @@ The `[options]` can allow the additional configure options that are included in 
 
 - To assign a single GPU (for example, GPU 0), add an option like `gpu 0`.
 
-### Acknowledgment
+## Acknowledgment
 
 We thank the authors for the following repositories for code reference:
 [[OLTR]](https://github.com/zhmiao/OpenLongTailRecognition-OLTR), [[Classifier-Balancing]](https://github.com/facebookresearch/classifier-balancing), [[Dassl]](https://github.com/KaiyangZhou/Dassl.pytorch), [[CoOp]](https://github.com/KaiyangZhou/CoOp).
