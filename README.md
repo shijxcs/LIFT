@@ -27,15 +27,16 @@ We encourage installing the latest dependencies, but if there are any incompatib
 
 All experiments can be reproduced using a single GPU with 20GB of memory.
 
-## Quick Start on the CIFAR-100 dataset
+## Quick Start on the CIFAR-100-LT dataset
 
 ```bash
+# CIFAR-100-LT (with imbalanced ratio=100)
 python main.py -d cifar100_ir100 -m clip_vit_b16_peft
 ```
 
 By running the above command, you can automatically download the CIFAR-100 dataset and run the method (PEL).
 
-## Running on large-scale long-tailed datasets
+## Running on Large-scale Long-tailed Datasets
 
 ### Prepare the Dataset
 
@@ -88,30 +89,6 @@ Path/To/Dataset
    └─ ......
 ```
 
-### Usage
-
-To train and test the proposed method, run
-
-```bash
-python main.py -d [data] -m [model] [options]
-```
-
-The `[data]` can be the name of a .yaml file in `configs/data`, including `imagenet_lt`, `places_lt`, `inat2018`, and `cifar100_ir100`.
-
-The `[model]` can be the name of a .yaml file in `configs/model`, including `clip_vit_b16_peft`, `clip_vit_b16_ft`, and `zsclip_vit_b16`.
-
-Taking the CIFAR-100-LT dataset as an example, you can 
-
-The `[options]` can allow the additional configure options that are included in `utils/config.py`. Following are some examples.
-
-- To specify the root path of datasets, add `root Path/To/Datasets`.
-
-- To change the output directory, add an option like `output_dir NewExpDir`. Then the results will be saved in `output/NewExpDir`.
-
-- To test an existing model, add `test_only True`. This option will test the model trained by your configure file. To test another model, add an additional option like `model_dir output/AnotherExpDir`.
-
-- To assign a single GPU (for example, GPU 0), add an option like `gpu 0`.
-
 ### Reproduction
 
 To reproduce the main result in the paper, please run
@@ -124,6 +101,28 @@ python main.py -d places_lt -m clip_vit_b16_peft
 # iNaturalist 2018
 python main.py -d inat2018 -m clip_vit_b16_peft num_epochs 20
 ```
+
+### Usage
+
+To train and test the proposed method on more settings, run
+
+```bash
+python main.py -d [data] -m [model] [options]
+```
+
+The `[data]` can be the name of a .yaml file in `configs/data`, including `imagenet_lt`, `places_lt`, `inat2018`, `cifar100_ir100`, `cifar100_ir50` and `cifar100_ir10`.
+
+The `[model]` can be the name of a .yaml file in `configs/model`, including `clip_vit_b16_peft`, `clip_vit_b16_ft`, and `zsclip_vit_b16`.
+
+The `[options]` can allow the additional configure options that are included in `utils/config.py`. Following are some examples.
+
+- To specify the root path of datasets, add `root Path/To/Datasets`.
+
+- To change the output directory, add an option like `output_dir NewExpDir`. Then the results will be saved in `output/NewExpDir`.
+
+- To test an existing model, add `test_only True`. This option will test the model trained by your configure file. To test another model, add an additional option like `model_dir output/AnotherExpDir`.
+
+- To assign a single GPU (for example, GPU 0), add an option like `gpu 0`.
 
 ## Acknowledgment
 
