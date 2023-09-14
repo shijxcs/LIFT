@@ -29,7 +29,9 @@ All experiments can be reproduced using a single GPU with 20GB of memory.
 
 ### Quick Start on the CIFAR-100 dataset
 
-`python main.py -d cifar100_ir100 -m clip_vit_b16_peft`
+```bash
+python main.py -d cifar100_ir100 -m clip_vit_b16_peft
+```
 
 By running the above command, you can automatically download the CIFAR-100 dataset and run the method (PEL).
 
