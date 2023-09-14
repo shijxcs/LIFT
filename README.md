@@ -30,11 +30,7 @@ All experiments can be reproduced using a single GPU with 20GB of memory.
 ## Quick Start on the CIFAR-100-LT dataset
 
 ```bash
-<<<<<<< HEAD
 # run PEL on CIFAR-100-LT (with imbalanced ratio=100)
-=======
-# CIFAR-100-LT (with imbalanced ratio=100)
->>>>>>> 55480edd0783de8b9887fe75451f449465900f63
 python main.py -d cifar100_ir100 -m clip_vit_b16_peft
 ```
 
@@ -98,7 +94,6 @@ Path/To/Dataset
 To reproduce the main result in the paper, please run
 
 ```bash
-<<<<<<< HEAD
 # run PEL on ImageNet-LT
 python main.py -d imagenet_lt -m clip_vit_b16_peft
 
@@ -106,13 +101,6 @@ python main.py -d imagenet_lt -m clip_vit_b16_peft
 python main.py -d places_lt -m clip_vit_b16_peft
 
 # run PEL on iNaturalist 2018
-=======
-# ImageNet-LT
-python main.py -d imagenet_lt -m clip_vit_b16_peft
-# Places-LT
-python main.py -d places_lt -m clip_vit_b16_peft
-# iNaturalist 2018
->>>>>>> 55480edd0783de8b9887fe75451f449465900f63
 python main.py -d inat2018 -m clip_vit_b16_peft num_epochs 20
 ```
 
