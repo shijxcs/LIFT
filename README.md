@@ -2,7 +2,7 @@
 
 This is the source code for the paper: Parameter-Efficient Long-Tailed Recognition
 
-### Requirements
+## Requirements
 
 * Python 3.8
 * PyTorch 2.0
@@ -23,11 +23,11 @@ pip install -r requirements.txt
 
 We encourage installing the latest dependencies, but if there are any incompatibilities, please change to the dependencies with the specified version `requirements-with-version.txt`.
 
-### Hardware
+## Hardware
 
 All experiments can be reproduced using a single GPU with 20GB of memory.
 
-### Quick Start on the CIFAR-100 dataset
+## Quick Start on the CIFAR-100 dataset
 
 ```bash
 python main.py -d cifar100_ir100 -m clip_vit_b16_peft
@@ -35,9 +35,9 @@ python main.py -d cifar100_ir100 -m clip_vit_b16_peft
 
 By running the above command, you can automatically download the CIFAR-100 dataset and run the method (PEL).
 
-### Running on large-scale long-tailed datasets
+## Running on large-scale long-tailed datasets
 
-#### Prepare the Dataset
+### Prepare the Dataset
 
 Download the dataset [Places](http://places2.csail.mit.edu/download.html), [ImageNet](http://image-net.org/index), and [iNaturalist 2018](https://github.com/visipedia/inat_comp/tree/master/2018).
 
@@ -88,7 +88,7 @@ Path/To/Dataset
    └─ ......
 ```
 
-#### Usage
+### Usage
 
 To train and test the proposed method, run
 
@@ -112,7 +112,20 @@ The `[options]` can allow the additional configure options that are included in 
 
 - To assign a single GPU (for example, GPU 0), add an option like `gpu 0`.
 
-### Acknowledgment
+### Reproduction
+
+To reproduce the main result in the paper, please run
+
+```bash
+# ImageNet-LT
+python main.py -d imagenet_lt -m clip_vit_b16_peft
+# Places-LT
+python main.py -d places_lt -m clip_vit_b16_peft
+# iNaturalist 2018
+python main.py -d inat2018 -m clip_vit_b16_peft num_epochs 20
+```
+
+## Acknowledgment
 
 We thank the authors for the following repositories for code reference:
 [[OLTR]](https://github.com/zhmiao/OpenLongTailRecognition-OLTR), [[Classifier-Balancing]](https://github.com/facebookresearch/classifier-balancing), [[Dassl]](https://github.com/KaiyangZhou/Dassl.pytorch), [[CoOp]](https://github.com/KaiyangZhou/CoOp).
