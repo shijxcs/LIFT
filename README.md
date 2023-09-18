@@ -1,6 +1,6 @@
 # Parameter-Efficient Long-Tailed Recognition
 
-This is the source code for the paper: Parameter-Efficient Long-Tailed Recognition
+This is the source code for the paper: [Parameter-Efficient Long-Tailed Recognition](http://www.lamda.nju.edu.cn/shijx/files/preprint-pel.pdf)
 
 ## Requirements
 
