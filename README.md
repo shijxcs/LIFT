@@ -1,12 +1,10 @@
 # Parameter-Efficient Long-Tailed Recognition
 
-Jiang-Xin Shi, Tong Wei, Zhi Zhou, Xin-Yan Han, Jie-Jing Shao, Yu-Feng Li
-
 This is the source code for the paper: [Parameter-Efficient Long-Tailed Recognition](https://arxiv.org/abs/2309.10019)
 
 <div align="center">
   <img src="./assets/framework.png" width="95%"/>
-</div><br/>
+</div>
 
 ## Requirements
 
