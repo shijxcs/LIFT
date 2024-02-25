@@ -38,7 +38,7 @@ class RN_Tuner(nn.Module):
             bias_list = None
 
         if use_bn_tuning:
-            bias_list = nn.ModuleList([
+            bn_list = nn.ModuleList([
                 mod for name, mod in rn_model.named_modules()
                 if isinstance(mod, nn.BatchNorm2d)
             ])
