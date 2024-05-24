@@ -1,10 +1,6 @@
-# Parameter-Efficient Long-Tailed Recognition
+# Long-Tail Learning with Foundation Model: Heavy Fine-Tuning Hurts
 
-This is the source code for the paper: [Parameter-Efficient Long-Tailed Recognition](https://arxiv.org/abs/2309.10019)
-
-<div align="center">
-  <img src="./assets/framework.png" width="95%"/>
-</div>
+This is the source code for the paper: [Long-Tail Learning with Foundation Model: Heavy Fine-Tuning Hurts](https://arxiv.org/abs/2309.10019)
 
 ## Requirements
 
@@ -18,8 +14,8 @@ This is the source code for the paper: [Parameter-Efficient Long-Tailed Recognit
 To install requirements, run:
 
 ```sh
-conda create -n pel python=3.8 -y
-conda activate pel
+conda create -n lift python=3.8 -y
+conda activate lift
 conda install pytorch==2.0.0 torchvision==0.15.0 pytorch-cuda=11.7 -c pytorch -c nvidia
 conda install tensorboard
 pip install -r requirements.txt
@@ -36,11 +32,11 @@ All experiments can be reproduced using a single GPU with 20GB of memory.
 ## Quick Start on the CIFAR-100-LT dataset
 
 ```bash
-# run PEL on CIFAR-100-LT (with imbalanced ratio=100)
+# run LIFT on CIFAR-100-LT (with imbalanced ratio=100)
 python main.py -d cifar100_ir100 -m clip_vit_b16_peft
 ```
 
-By running the above command, you can automatically download the CIFAR-100 dataset and run the method (PEL).
+By running the above command, you can automatically download the CIFAR-100 dataset and run the method (LIFT).
 
 ## Running on Large-scale Long-tailed Datasets
 
@@ -100,13 +96,13 @@ Path/To/Dataset
 To reproduce the main result in the paper, please run
 
 ```bash
-# run PEL on ImageNet-LT
+# run LIFT on ImageNet-LT
 python main.py -d imagenet_lt -m clip_vit_b16_peft
 
-# run PEL on Places-LT
+# run LIFT on Places-LT
 python main.py -d places_lt -m clip_vit_b16_peft
 
-# run PEL on iNaturalist 2018
+# run LIFT on iNaturalist 2018
 python main.py -d inat2018 -m clip_vit_b16_peft num_epochs 20
 ```
 
@@ -148,10 +144,10 @@ We thank the authors for the following repositories for code reference:
 If you find this repo useful for your work, please cite as:
 
 ```bibtex
-@article{shi2023parameter,
-  title={Parameter-Efficient Long-Tailed Recognition},
-  author={Shi, Jiang-Xin and Wei, Tong and Zhou, Zhi and Han, Xin-Yan and Shao, Jie-Jing and Li, Yu-Feng},
-  journal={arXiv preprint arXiv:2309.10019},
-  year={2023}
+@inproceedings{shi2024longtail,
+  title={Long-Tail Learning with Foundation Model: Heavy Fine-Tuning Hurts},
+  author={Jiang-Xin Shi and Tong Wei and Zhi Zhou and Jie-Jing Shao and Xin-Yan Han and Yu-Feng Li},
+  booktitle={Proceedings of the 41th International Conference on Machine Learning},
+  year={2024}
 }
 ```
