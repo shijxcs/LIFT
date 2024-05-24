@@ -1,4 +1,4 @@
-# PEL with TTE
+# LIFT with TTE
 
 python main.py -d places_lt -m clip_vit_b16_peft
 python main.py -d imagenet_lt -m clip_vit_b16_peft
