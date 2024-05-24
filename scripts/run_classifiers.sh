@@ -1,4 +1,4 @@
-# PEL with different classifiers
+# LIFT with different classifiers
 
 python main.py -d places_lt -m clip_vit_b16_peft classifier LinearClassifier
 python main.py -d places_lt -m clip_vit_b16_peft classifier L2NormedClassifier
