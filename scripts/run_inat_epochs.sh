@@ -1,4 +1,4 @@
-# PEL on iNaturalist 2018 by training different epochs
+# LIFT on iNaturalist 2018 by training different epochs
 
 # with TTE
 python main.py -d inat2018 -m clip_vit_b16_peft num_epochs 5
