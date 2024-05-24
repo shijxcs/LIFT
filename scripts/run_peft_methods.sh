@@ -1,4 +1,4 @@
-# PEL with different PEFT methods
+# LIFT with different PEFT methods
 
 python main.py -d places_lt -m clip_vit_b16_peft adaptformer False
 python main.py -d places_lt -m clip_vit_b16_peft adaptformer False bias_tuning True
