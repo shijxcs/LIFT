@@ -1,4 +1,4 @@
-# PEL with different classifier initialization methods
+# LIFT with different classifier initialization methods
 
 python main.py -d places_lt -m clip_vit_b16_peft init_head None
 python main.py -d places_lt -m clip_vit_b16_peft init_head class_mean
