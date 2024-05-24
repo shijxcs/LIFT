@@ -1,4 +1,4 @@
-# PEL with different losses
+# LIFT with different losses
 
 python main.py -d places_lt -m clip_vit_b16_peft loss_type CE
 python main.py -d places_lt -m clip_vit_b16_peft loss_type Focal
