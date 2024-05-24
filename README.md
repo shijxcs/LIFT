@@ -1,6 +1,6 @@
 # Long-Tail Learning with Foundation Model: Heavy Fine-Tuning Hurts
 
-This is the source code for the paper: [Long-Tail Learning with Foundation Model: Heavy Fine-Tuning Hurts](https://arxiv.org/abs/2309.10019)
+This is the source code for the paper: [Long-Tail Learning with Foundation Model: Heavy Fine-Tuning Hurts](https://arxiv.org/abs/2309.10019) (ICML 2024).
 
 ## Requirements
 
