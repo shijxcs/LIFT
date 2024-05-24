@@ -1,4 +1,4 @@
-# PEL without TTE (after running the main results and getting the checkpoints)
+# LIFT without TTE (after running the main results and getting the checkpoints)
 
 python main.py -d places_lt -m clip_vit_b16_peft test_only True test_ensemble False
 python main.py -d imagenet_lt -m clip_vit_b16_peft test_only True test_ensemble False
