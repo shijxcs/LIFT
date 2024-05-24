@@ -1,4 +1,4 @@
-# PEL with different learnable parameters by changing the bottleneck dimension
+# LIFT with different learnable parameters by changing the bottleneck dimension
 
 python main.py -d places_lt -m clip_vit_b16_peft adaptformer False
 python main.py -d places_lt -m clip_vit_b16_peft adapter_dim 1
