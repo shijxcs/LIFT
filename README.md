@@ -147,7 +147,7 @@ If you find this repo useful for your work, please cite as:
 @inproceedings{shi2024longtail,
   title={Long-Tail Learning with Foundation Model: Heavy Fine-Tuning Hurts},
   author={Jiang-Xin Shi and Tong Wei and Zhi Zhou and Jie-Jing Shao and Xin-Yan Han and Yu-Feng Li},
-  booktitle={Proceedings of the 41th International Conference on Machine Learning},
+  booktitle={Proceedings of the 41st International Conference on Machine Learning},
   year={2024}
 }
 ```
