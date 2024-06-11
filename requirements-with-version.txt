@@ -1,8 +1,0 @@
-numpy==1.24.3
-scipy==1.10.1
-scikit-learn==1.2.1
-yacs==0.1.8
-tqdm==4.64.1
-ftfy==6.1.1
-regex==2022.7.9
-timm==0.6.12

@@ -1,4 +1,5 @@
 import os
+import json
 import time
 import datetime
 import numpy as np
@@ -15,7 +16,7 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 
 from clip import clip
-from timm.models.vision_transformer import vit_base_patch16_224
+from timm.models.vision_transformer import vit_base_patch16_224, vit_base_patch16_384, vit_large_patch16_224
 
 import datasets
 from models import *
@@ -24,10 +25,11 @@ from utils.meter import AverageMeter
 from utils.samplers import DownSampler
 from utils.losses import *
 from utils.evaluator import Evaluator
+from utils.templates import ZEROSHOT_TEMPLATES
 
 
-def load_clip_to_cpu(cfg):
-    backbone_name = cfg.backbone.lstrip("CLIP-")
+def load_clip_to_cpu(backbone_name, prec):
+    backbone_name = backbone_name.lstrip("CLIP-")
     url = clip._MODELS[backbone_name]
     model_path = clip._download(url)
 
@@ -41,21 +43,24 @@ def load_clip_to_cpu(cfg):
 
     model = clip.build_model(state_dict or model.state_dict())
 
-    assert cfg.prec in ["fp16", "fp32", "amp"]
-    if cfg.prec == "fp32" or cfg.prec == "amp":
+    assert prec in ["fp16", "fp32", "amp"]
+    if prec == "fp32" or prec == "amp":
         # CLIP's default precision is fp16
         model.float()
 
     return model
 
 
-def load_vit_to_cpu(cfg):
-    backbone_name = cfg.backbone
+def load_vit_to_cpu(backbone_name, prec):
     if backbone_name == "IN21K-ViT-B/16":
         model = vit_base_patch16_224(pretrained=True).eval()
+    elif backbone_name == "IN21K-ViT-B/16@384px":
+        model = vit_base_patch16_384(pretrained=True).eval()
+    elif backbone_name == "IN21K-ViT-L/16":
+        model = vit_large_patch16_224(pretrained=True).eval()
 
-    assert cfg.prec in ["fp16", "fp32", "amp"]
-    if cfg.prec == "fp16":
+    assert prec in ["fp16", "fp32", "amp"]
+    if prec == "fp16":
         # ViT's default precision is fp32
         model.half()
     
@@ -108,13 +113,31 @@ class Trainer:
             transforms.Normalize(mean, std),
         ])
 
-        if cfg.test_ensemble:
-            transform_test = transforms.Compose([
-                transforms.Resize(resolution + expand),
-                transforms.FiveCrop(resolution),
-                transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
-                transforms.Normalize(mean, std),
-            ])
+        if cfg.tte:
+            if cfg.tte_mode == "fivecrop":
+                transform_test = transforms.Compose([
+                    transforms.Resize(resolution + expand),
+                    transforms.FiveCrop(resolution),
+                    transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
+                    transforms.Normalize(mean, std),
+                ])
+            elif cfg.tte_mode == "tencrop":
+                transform_test = transforms.Compose([
+                    transforms.Resize(resolution + expand),
+                    transforms.TenCrop(resolution),
+                    transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
+                    transforms.Normalize(mean, std),
+                ])
+            elif cfg.tte_mode == "randaug":
+                _resize_and_flip = transforms.Compose([
+                    transforms.RandomResizedCrop(resolution),
+                    transforms.RandomHorizontalFlip(),
+                    transforms.ToTensor(),
+                ])
+                transform_test = transforms.Compose([
+                    transforms.Lambda(lambda image: torch.stack([_resize_and_flip(image) for _ in range(cfg.randaug_times)])),
+                    transforms.Normalize(mean, std),
+                ])
         else:
             transform_test = transforms.Compose([
                 transforms.Resize(resolution * 8 // 7),
@@ -180,18 +203,19 @@ class Trainer:
         if cfg.zero_shot:
             assert cfg.backbone.startswith("CLIP")
             print(f"Loading CLIP (backbone: {cfg.backbone})")
-            clip_model = load_clip_to_cpu(cfg)
+            clip_model = load_clip_to_cpu(cfg.backbone, cfg.prec)
             self.model = ZeroShotCLIP(clip_model)
             self.model.to(self.device)
             self.tuner = None
             self.head = None
 
-            prompts = self.get_tokenized_prompts(classnames)
+            template = "a photo of a {}."
+            prompts = self.get_tokenized_prompts(classnames, template)
             self.model.init_text_features(prompts)
 
         elif cfg.backbone.startswith("CLIP"):
             print(f"Loading CLIP (backbone: {cfg.backbone})")
-            clip_model = load_clip_to_cpu(cfg)
+            clip_model = load_clip_to_cpu(cfg.backbone, cfg.prec)
             self.model = PeftModelFromCLIP(cfg, clip_model, num_classes)
             self.model.to(self.device)
             self.tuner = self.model.tuner
@@ -199,7 +223,7 @@ class Trainer:
 
         elif cfg.backbone.startswith("IN21K-ViT"):
             print(f"Loading ViT (backbone: {cfg.backbone})")
-            vit_model = load_vit_to_cpu(cfg)
+            vit_model = load_vit_to_cpu(cfg.backbone, cfg.prec)
             self.model = PeftModelFromViT(cfg, vit_model, num_classes)
             self.model.to(self.device)
             self.tuner = self.model.tuner
@@ -278,8 +302,7 @@ class Trainer:
         elif cfg.loss_type == "LADE": # https://arxiv.org/abs/2012.00321
             self.criterion = LADELoss(cls_num_list=cls_num_list)
         
-    def get_tokenized_prompts(self, classnames):
-        template = "a photo of a {}."
+    def get_tokenized_prompts(self, classnames, template):
         prompts = [template.format(c.replace("_", " ")) for c in classnames]
         # print(f"Prompts: {prompts}")
         prompts = torch.cat([clip.tokenize(p) for p in prompts])
@@ -292,9 +315,36 @@ class Trainer:
         classnames = self.classnames
 
         print("Initialize head with text features")
-        prompts = self.get_tokenized_prompts(classnames)
-        text_features = self.model.encode_text(prompts)
-        text_features = F.normalize(text_features, dim=-1)
+        if cfg.prompt == "ensemble":
+            all_text_features = []
+            for template in tqdm(ZEROSHOT_TEMPLATES['imagenet']):
+                prompts = self.get_tokenized_prompts(classnames, template)
+                text_features = self.model.encode_text(prompts)
+                text_features = F.normalize(text_features, dim=-1)
+                all_text_features.append(text_features)
+            all_text_features = torch.stack(all_text_features)
+            text_features = all_text_features.mean(dim=0)
+        elif cfg.prompt == "descriptor":
+            with open("utils/descriptors_imagenet.json") as f:
+                descriptors = json.load(f)
+            template = "{}"
+            all_class_features = []
+            for cn in tqdm(classnames):
+                prompts = self.get_tokenized_prompts(descriptors[cn], template)
+                text_features = self.model.encode_text(prompts)
+                text_features = F.normalize(text_features, dim=-1)
+                all_class_features.append(text_features.mean(dim=0))
+            text_features = torch.stack(all_class_features)
+        elif cfg.prompt == "classname":
+            template = "{}"
+            prompts = self.get_tokenized_prompts(classnames, template)
+            text_features = self.model.encode_text(prompts)
+            text_features = F.normalize(text_features, dim=-1)
+        elif cfg.prompt == "default":
+            template = "a photo of a {}."
+            prompts = self.get_tokenized_prompts(classnames, template)
+            text_features = self.model.encode_text(prompts)
+            text_features = F.normalize(text_features, dim=-1)
 
         if cfg.backbone.startswith("CLIP-ViT"):
             text_features = text_features @ self.model.image_encoder.proj.t()
@@ -518,8 +568,16 @@ class Trainer:
             _bsz, _ncrops, _c, _h, _w = image.size()
             image = image.view(_bsz * _ncrops, _c, _h, _w)
 
-            output = self.model(image)
-            output = output.view(_bsz, _ncrops, -1).mean(dim=1)
+            if _ncrops <= 5:
+                output = self.model(image)
+                output = output.view(_bsz, _ncrops, -1).mean(dim=1)
+            else:
+                # CUDA out of memory
+                output = []
+                image = image.view(_bsz, _ncrops, _c, _h, _w)
+                for k in range(_ncrops):
+                    output.append(self.model(image[:, k]))
+                output = torch.stack(output).mean(dim=0)
 
             self.evaluator.process(output, label)
 
@@ -566,5 +624,7 @@ class Trainer:
         head_dict = checkpoint["head"]
 
         print("Loading weights to from {}".format(load_path))
-        self.tuner.load_state_dict(tuner_dict)
-        self.head.load_state_dict(head_dict)
+        self.tuner.load_state_dict(tuner_dict, strict=False)
+
+        if head_dict["weight"].shape == self.head.weight.shape:
+            self.head.load_state_dict(head_dict, strict=False)
