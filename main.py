@@ -52,6 +52,9 @@ def main(args):
 
     trainer = Trainer(cfg)
     
+    if cfg.model_dir is not None:
+        trainer.load_model(cfg.model_dir)
+    
     if cfg.zero_shot:
         trainer.test()
         return

@@ -38,16 +38,24 @@ _C.vpt_deep = False
 _C.adapter = False
 _C.adaptformer = False
 _C.lora = False
+_C.lora_mlp = False
 _C.ssf_attn = False
 _C.ssf_mlp = False
 _C.ssf_ln = False
+_C.mask = False   # fine-tuning a specific proportion of all parameters
 _C.partial = None  # fine-tuning (or parameter-efficient fine-tuning) partial block layers
 _C.vpt_len = None  # length of VPT sequence
 _C.adapter_dim = None  # bottle dimension for adapter / adaptformer / lora.
+_C.adaptformer_scale = "learnable"  # "learnable" or scalar
+_C.mask_ratio = None
+_C.mask_seed = None
 
 _C.init_head = None  # "text_feat" (only for CLIP) / "class_mean" / "1_shot" / "10_shot" / "100_shot" / "linear_probe"
-_C.test_ensemble = False  # test-time ensemble
+_C.prompt = "default" # "classname" / "default" / "ensemble" / "descriptor"
+_C.tte = False  # test-time ensemble
 _C.expand = 24 # expand the width and height of images for test-time ensemble
+_C.tte_mode = "fivecrop" # "fivecrop" / "tencrop" / "randaug"
+_C.randaug_times = 1
 
 _C.zero_shot = False  # zero-shot CLIP (only for CLIP)
 _C.test_only = False  # load model and test

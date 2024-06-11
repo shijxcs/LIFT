@@ -21,11 +21,22 @@ conda install tensorboard
 pip install -r requirements.txt
 ```
 
-We encourage installing the latest dependencies. If there are any incompatibilities, please change the dependencies with the specified version [requirements-with-version.txt](requirements-with-version.txt).
+We encourage installing the latest dependencies. If there are any incompatibilities, please install the dependencies with the following versions.
+
+```
+numpy==1.24.3
+scipy==1.10.1
+scikit-learn==1.2.1
+yacs==0.1.8
+tqdm==4.64.1
+ftfy==6.1.1
+regex==2022.7.9
+timm==0.6.12
+```
 
 ## Hardware
 
-All experiments can be reproduced using a single GPU with 20GB of memory.
+Most experiments can be reproduced using a single GPU with 20GB of memory (larger models such as ViT-L require more memory).
 
 - To further reduce the GPU memory cost, gradient accumulation is recommended. Please refer to [Usage](#usage) for detailed instructions.
 
@@ -33,7 +44,7 @@ All experiments can be reproduced using a single GPU with 20GB of memory.
 
 ```bash
 # run LIFT on CIFAR-100-LT (with imbalanced ratio=100)
-python main.py -d cifar100_ir100 -m clip_vit_b16_peft
+python main.py -d cifar100_ir100 -m clip_vit_b16 adaptformer True
 ```
 
 By running the above command, you can automatically download the CIFAR-100 dataset and run the method (LIFT).
@@ -97,18 +108,18 @@ To reproduce the main result in the paper, please run
 
 ```bash
 # run LIFT on ImageNet-LT
-python main.py -d imagenet_lt -m clip_vit_b16_peft
+python main.py -d imagenet_lt -m clip_vit_b16 adaptformer True
 
 # run LIFT on Places-LT
-python main.py -d places_lt -m clip_vit_b16_peft
+python main.py -d places_lt -m clip_vit_b16 adaptformer True
 
 # run LIFT on iNaturalist 2018
-python main.py -d inat2018 -m clip_vit_b16_peft num_epochs 20
+python main.py -d inat2018 -m clip_vit_b16_peft adaptformer True num_epochs 20
 ```
 
 For other experiments, please refer to [scripts](scripts) for reproduction commands.
 
-### Usage
+### Detailed Usage
 
 To train and test the proposed method on more settings, run
 
@@ -116,11 +127,17 @@ To train and test the proposed method on more settings, run
 python main.py -d [data] -m [model] [options]
 ```
 
-The `[data]` can be the name of a .yaml file in [configs/data](configs/data), including `imagenet_lt`, `places_lt`, `inat2018`, `cifar100_ir100`, `cifar100_ir50` and `cifar100_ir10`.
+The `[data]` can be the name of a .yaml file in [configs/data](configs/data), including `imagenet_lt`, `places_lt`, `inat2018`, `cifar100_ir100`, `cifar100_ir50`, `cifar100_ir10`, etc.
 
-The `[model]` can be the name of a .yaml file in [configs/model](configs/model), including `clip_vit_b16_peft`, `clip_vit_b16_ft`, and `zsclip_vit_b16`.
+The `[model]` can be the name of a .yaml file in [configs/model](configs/model), including `clip_rn50`, `clip_vit_b16`, `in21k_vit_b16`, etc.
 
-The `[options]` can allow the additional configure options included in [utils/config.py](utils/config.py). Following are some examples.
+Note that using only `-d` and `-m` options denotes only fine-tuning the classifier. Please use additional `[options]` for more settings. 
+
+- To apply lightweight fine-tuning methods, add options like `lora True`, `adaptformer True`, etc.
+
+- To apply test-time ensembling, add `tte True`.
+
+Moreover, `[options]` can facilitate modifying the configure options in [utils/config.py](utils/config.py). Following are some examples.
 
 - To specify the root path of datasets, add `root Path/To/Datasets`.
 
@@ -133,6 +150,8 @@ The `[options]` can allow the additional configure options included in [utils/co
 - To test an existing model, add `test_only True`. This option will test the model trained by your configure file. To test another model, add an additional option like `model_dir output/AnotherExpDir`.
 
 - To test an existing model on the training set, add `test_train True`.
+
+You can also refer to [scripts](scripts) for example commands.
 
 ## Acknowledgment
 

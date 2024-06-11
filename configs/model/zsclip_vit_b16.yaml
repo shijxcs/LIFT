@@ -11,3 +11,6 @@ num_workers: 8
 prec: "amp"
 
 zero_shot: True
+
+tte: False
+expand: 24
