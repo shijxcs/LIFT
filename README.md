@@ -114,7 +114,7 @@ python main.py -d imagenet_lt -m clip_vit_b16 adaptformer True
 python main.py -d places_lt -m clip_vit_b16 adaptformer True
 
 # run LIFT on iNaturalist 2018
-python main.py -d inat2018 -m clip_vit_b16_peft adaptformer True num_epochs 20
+python main.py -d inat2018 -m clip_vit_b16 adaptformer True num_epochs 20
 ```
 
 For other experiments, please refer to [scripts](scripts) for reproduction commands.
